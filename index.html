@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#55260f" />
+  <meta name="description" content="لعبة ليكاب الأقصى: ألغاز المكعبات الممتعة دون إنترنت." />
+  <link rel="icon" type="image/png" href="icon-192.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>ليكاب الأقصى | LiCOP Al-Aqsa</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;color:#f9fbff;background:#0a1229;-webkit-tap-highlight-color:transparent}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse 80% 45% at 50% 0%,#263865 0%,transparent 100%),linear-gradient(150deg,#091127,#172447 70%,#0b142c);overflow-x:hidden}
+    .wrap{max-width:560px;margin:0 auto;padding:18px 16px 32px}
+    header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+    .logo{flex:none;width:58px;height:58px;border-radius:17px;background:linear-gradient(135deg,#ffe187,#f5ae41);display:grid;place-items:center;box-shadow:0 7px 22px #0003}
+    .logo svg{width:37px;height:37px}.brand{flex:1;min-width:0}.brand h1{font-size:25px;line-height:1.25;margin:0;font-weight:950}.brand small{color:#ffcf62;font-size:14px;font-weight:750}
+    button{font:inherit}.reset{background:#33456e;color:white;border:1px solid #50638b;width:45px;height:45px;border-radius:14px;font-size:27px;cursor:pointer}
+    .scores{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:17px}.score{background:#151f3e;border:1px solid #35466e;border-radius:16px;text-align:center;padding:13px 4px 10px;min-width:0}.score span{font-size:12px;color:#acbadc;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.score b{font-size:27px;display:block;line-height:1.45}.yellow{color:#ffcd5a}.mint{color:#7be4be}
+    .board-shell{background:#1c2a4c;border:1px solid #4a5d85;border-radius:20px;padding:7px;box-shadow:0 12px 35px #0005;width:min(100%,478px);margin:0 auto}
+    #board{aspect-ratio:1/1;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr))}
+    .cell{margin:2px;border-radius:7px;background:#28365d;border:1px solid #ffffff0d;cursor:pointer;transition:background .09s,transform .09s;min-width:0;min-height:0}
+    .cell.filled{box-shadow:inset 0 2px 0 #ffffff3c,0 2px 8px #0002}.cell.preview-ok{background:#63dba8!important;border:1px solid #e1ffeea0}.cell.preview-no{background:#f16b7a!important;border:1px solid #ffc0c6a0}
+    .tip{font-size:13px;color:#bac8e8;line-height:1.55;margin:15px auto 12px;width:min(100%,478px)}.tip .icon{color:#ffcf62}
+    .tray{width:min(100%,478px);margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.piece-slot{height:116px;background:#131f3d;border:1px solid #35466a;border-radius:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:none;user-select:none;overflow:hidden;position:relative}.piece-slot.chosen{background:#2b4068;border:2px solid #ffcf62}.piece-slot.empty::after{content:'✓';font-size:27px;color:#587397}
+    .mini-piece{position:relative;flex:none;pointer-events:none}.mini-tile{position:absolute;border-radius:5px;box-shadow:inset 0 2px 0 #ffffff50,0 2px 8px #1116;border:1px solid #ffffff60}
+    .footer{width:min(100%,478px);margin:13px auto 0;text-align:center;color:#9dadd3;font-size:12px;line-height:1.7}
+    .ghost{position:fixed;z-index:100;pointer-events:none;opacity:.94;filter:drop-shadow(0 8px 14px #0008)}
+    .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#205960;border:1px solid #68cdb8;color:white;border-radius:12px;padding:11px 18px;box-shadow:0 10px 30px #0009;font-size:14px;z-index:110;opacity:0;pointer-events:none;transition:opacity .18s;max-width:90vw;text-align:center}.toast.show{opacity:1}
+    .overlay{position:fixed;inset:0;background:#060c1cdd;display:none;align-items:center;justify-content:center;z-index:200;padding:20px}.overlay.visible{display:flex}.modal{border:1px solid #4e5f86;background:#172345;box-shadow:0 15px 50px #0008;border-radius:26px;padding:30px 24px;text-align:center;width:min(100%,340px)}.modal h2{margin:0 0 10px;font-size:28px}.modal p{color:#b5c2df}.modal strong{font-size:40px;display:block;color:#ffcf62;margin:18px 0}.modal button{background:#ffce5c;color:#142041;border:0;border-radius:13px;padding:12px 28px;font-weight:850;cursor:pointer}
+    @media (max-width:360px){.wrap{padding-left:10px;padding-right:10px}.brand h1{font-size:21px}.score b{font-size:23px}.piece-slot{height:96px}.cell{margin:1.5px;border-radius:5px}}
+  </style>
+</head>
+<body>
+  <div id="launchScreen" aria-label="شاشة افتتاحية ليكاب الأقصى" style="position:fixed;inset:0;background:#060d24;z-index:1000;display:flex;justify-content:center;align-items:center;transition:opacity .35s ease;">
+    <img src="splash.png" alt="ليكاب الأقصى" style="height:100%;width:100%;object-fit:contain;" />
+  </div>
+  <main class="wrap">
+    <header>
+      <div class="logo" aria-hidden="true"><img src="icon-192.png" alt="" width="58" height="58" style="width:100%;height:100%;object-fit:cover;border-radius:17px" /></div>
+      <div class="brand"><h1>ليكاب الأقصى</h1><small>LiCOP • لعبة البلوكات</small></div>
+      <button class="reset" id="restart" title="جولة جديدة" aria-label="جولة جديدة">↻</button>
+    </header>
+    <section class="scores" aria-label="نتائج اللعبة"><div class="score"><span>⚡ النقاط</span><b id="score">0</b></div><div class="score"><span>🏆 الرقم القياسي</span><b id="best">0</b></div><div class="score"><span>✨ السطور</span><b id="lines">0</b></div></section>
+    <section class="board-shell" aria-label="لوحة اللعب"><div id="board" role="grid" aria-label="شبكة من ثمانية صفوف وثمانية أعمدة"></div></section>
+    <p class="tip"><span class="icon">☝</span> <span id="hint">اسحب القطعة إلى اللوحة، أو اضغط عليها ثم اضغط على مكانها.</span></p>
+    <section class="tray" id="tray" aria-label="القطع الثلاث"></section>
+    <p class="footer">املأ صفًا أو عمودًا بالكامل لمسحه. ضع القطع الثلاث لتحصل على مجموعة جديدة.<br>تعمل هذه النسخة دون إنترنت بعد حفظ الملف.</p>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="overlay" id="gameover" role="dialog" aria-modal="true" aria-labelledby="gameover-title"><div class="modal"><h2 id="gameover-title">انتهت الجولة 🎮</h2><p>لم يعد هناك مكان للقطع المتاحة.</p><strong id="finalscore">0</strong><button id="playAgain">العب من جديد</button></div></div>
+  <script>
+    'use strict';
+    const N=8, colors=['#52d6ec','#f89b60','#ab91ff','#60d7a7','#ff7ca9','#ffd55d'];
+    const shapes=[
+      ['#'],['##'],['###'],['####'],['#####'],['#','#'],['#','#','#'],['#','#','#','#'],['#','#','#','#','#'],
+      ['##','##'],['###','###','###'],['#.','##'],['.#','##'],['##','#.'],['##','.#'],
+      ['#..','###'],['..#','###'],['###','#..'],['###','..#'],['###','.#.'],['.#.','###'],['.##','##.'],['##.','.##'],['.#.','###','.#.']
+    ];
+    const boardEl=document.getElementById('board'),trayEl=document.getElementById('tray');
+    const cells=[];
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+      const el=document.createElement('div');el.className='cell';el.dataset.r=r;el.dataset.c=c;el.setAttribute('role','gridcell');el.setAttribute('aria-label',`صف ${r+1} عمود ${c+1}`);
+      el.addEventListener('click',()=>{if(selected!==null)place(selected,r,c)});
+      boardEl.appendChild(el);cells.push(el);
+    }
+    let board, tray,score,lines,combo,selected=null,hover=null,over=false,drag=null,toastTimer=null;
+    let best=0;try{best=Number(localStorage.getItem('licop_best_score')||0)||0}catch(_){/* ملفات محلية محمية */}
+    function randomPiece(){const n=Math.floor(Math.random()*(shapes.length+8));const lay=shapes[n<shapes.length?n:n%10],blocks=[];lay.forEach((s,r)=>[...s].forEach((ch,c)=>{if(ch==='#')blocks.push([r,c])}));return {blocks,w:Math.max(...blocks.map(x=>x[1]))+1,h:Math.max(...blocks.map(x=>x[0]))+1,color:Math.floor(Math.random()*colors.length)}}
+    function refill(){tray=Array.from({length:3},randomPiece)}
+    function canPlace(p,r,c){return !!p&&p.blocks.every(([a,b])=>r+a>=0&&r+a<N&&c+b>=0&&c+b<N&&board[r+a][c+b]===0)}
+    function anyMove(){return tray.some(p=>p&&Array.from({length:N*N},(_,i)=>[Math.floor(i/N),i%N]).some(([r,c])=>canPlace(p,r,c)))}
+    function place(slot,r,c){const p=tray[slot];if(over||!canPlace(p,r,c)){notify('لا يمكن وضع القطعة هنا. جرّب مكانًا آخر.');return false}
+      p.blocks.forEach(([a,b])=>board[r+a][c+b]=p.color+1);let gain=p.blocks.length*10;
+      const rr=[],cc=[];for(let i=0;i<N;i++){if(board[i].every(Boolean))rr.push(i);if(board.every(row=>row[i]!==0))cc.push(i)}
+      const n=rr.length+cc.length;
+      if(n){combo++;lines+=n;rr.forEach(i=>board[i].fill(0));cc.forEach(i=>{for(let j=0;j<N;j++)board[j][i]=0});gain+=n*100*combo+Math.max(0,n-1)*50;notify(`أحسنت! مسحت ${n} ${n===1?'سطرًا':'أسطر'} • +${gain} نقطة`)}else combo=0;
+      score+=gain;tray[slot]=null;if(tray.every(p=>!p))refill();selected=null;hover=null;
+      if(score>best){best=score;try{localStorage.setItem('licop_best_score',String(best))}catch(_){}}
+      render();if(!anyMove()){over=true;setTimeout(()=>{document.getElementById('finalscore').textContent=score+' نقطة';document.getElementById('gameover').classList.add('visible')},350)}return true
+    }
+    function newGame(){board=Array.from({length:N},()=>Array(N).fill(0));score=0;lines=0;combo=0;selected=null;hover=null;over=false;refill();document.getElementById('gameover').classList.remove('visible');render()}
+    function mini(p,cell){const root=document.createElement('div');root.className='mini-piece';root.style.width=p.w*cell+'px';root.style.height=p.h*cell+'px';p.blocks.forEach(([r,c])=>{const e=document.createElement('div');e.className='mini-tile';e.style.cssText=`width:${cell-2}px;height:${cell-2}px;top:${r*cell+1}px;right:${c*cell+1}px;background:${colors[p.color]}`;root.appendChild(e)});return root}
+    function render(){cells.forEach((el,i)=>{const r=Math.floor(i/N),c=i%N,v=board[r][c];el.className='cell'+(v?' filled':'');el.style.background=v?colors[v-1]:'';
+      if(hover&&tray[hover.slot]){const p=tray[hover.slot];if(p.blocks.some(([a,b])=>hover.r+a===r&&hover.c+b===c)&&!v)el.classList.add(canPlace(p,hover.r,hover.c)?'preview-ok':'preview-no')}
+    });
+    document.getElementById('score').textContent=score;document.getElementById('best').textContent=best;document.getElementById('lines').textContent=lines;
+    document.getElementById('hint').textContent=selected===null?'اسحب القطعة إلى اللوحة، أو اضغط عليها ثم اضغط على مكانها.':'القطعة محددة! اضغط على الخانة المراد وضع القطعة فيها.';
+    trayEl.replaceChildren();tray.forEach((p,slot)=>{const box=document.createElement('div');box.className='piece-slot'+(selected===slot?' chosen':'')+(!p?' empty':'');box.dataset.slot=slot;
+      if(p){const width=Math.min(24,Math.floor((trayEl.getBoundingClientRect().width/3-28)/p.w),Math.floor(92/p.h));box.appendChild(mini(p,Math.max(12,width)));box.addEventListener('pointerdown',e=>startDrag(e,slot,box));box.addEventListener('click',()=>{if(suppressClick){suppressClick=false;return}selected=selected===slot?null:slot;render()})}
+      trayEl.appendChild(box)
+    })
+    }
+    let suppressClick=false;
+    function startDrag(e,slot,box){if(e.button!==undefined&&e.button!==0)return;drag={slot,x:e.clientX,y:e.clientY,moved:false,ghost:null};if(e.pointerType==='touch')e.preventDefault()}
+    document.addEventListener('pointermove',e=>{if(!drag)return;const d=drag,dist=Math.hypot(e.clientX-d.x,e.clientY-d.y);if(dist<8&&!d.moved)return;
+      if(!d.moved){d.moved=true;d.ghost=document.createElement('div');d.ghost.className='ghost';d.ghost.appendChild(mini(tray[d.slot],26));document.body.appendChild(d.ghost)}
+      d.ghost.style.left=(e.clientX-18)+'px';d.ghost.style.top=(e.clientY-18)+'px';const cell=document.elementFromPoint(e.clientX,e.clientY)?.closest('.cell');
+      if(cell&&boardEl.contains(cell)){const next={slot:d.slot,r:+cell.dataset.r,c:+cell.dataset.c};if(!hover||hover.slot!==next.slot||hover.r!==next.r||hover.c!==next.c){hover=next;renderBoardOnly()}}
+      else if(hover){hover=null;renderBoardOnly()}
+    },{passive:true});
+    function renderBoardOnly(){cells.forEach((el,i)=>{el.classList.remove('preview-ok','preview-no');if(!hover||!tray[hover.slot])return;const p=tray[hover.slot],r=Math.floor(i/N),c=i%N;if(board[r][c]===0&&p.blocks.some(([a,b])=>hover.r+a===r&&hover.c+b===c))el.classList.add(canPlace(p,hover.r,hover.c)?'preview-ok':'preview-no')})}
+    document.addEventListener('pointerup',e=>{if(!drag)return;const d=drag;drag=null;if(d.ghost)d.ghost.remove();if(d.moved){suppressClick=true;setTimeout(()=>suppressClick=false,90);const cell=document.elementFromPoint(e.clientX,e.clientY)?.closest('.cell');hover=null;if(cell&&boardEl.contains(cell))place(d.slot,+cell.dataset.r,+cell.dataset.c);else renderBoardOnly()}},true);
+    document.addEventListener('pointercancel',()=>{if(drag?.ghost)drag.ghost.remove();drag=null;hover=null;renderBoardOnly()});
+    function notify(text){const t=document.getElementById('toast');t.textContent=text;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1700)}
+    document.getElementById('restart').addEventListener('click',newGame);document.getElementById('playAgain').addEventListener('click',newGame);
+    newGame();
+    if(typeof window !== 'undefined') window.addEventListener('load',()=>setTimeout(()=>{const intro=document.getElementById('launchScreen');if(intro){intro.style.opacity='0';setTimeout(()=>intro.remove(),380)}},1450));
+    document.getElementById('launchScreen').addEventListener('click',e=>{e.currentTarget.remove()});
+    if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  </script>
+</body>
+</html>
